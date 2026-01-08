@@ -1,0 +1,20 @@
+name: gha-openapi-tools validation
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - OMSA.yaml
+  pull_request:
+    paths:
+      - OMSA.yaml
+
+jobs:
+  matrix:
+    uses: entur/gha-openapi-tools/.github/workflows/workflow.yml@v0
+    with:
+      spec_path: OMSA.yaml
+      mode: both
+      client_generators: python,kotlin,java,csharp,typescript-axios
+      server_generators: aspnetcore,kotlin-spring,spring,python-fastapi
+      run_compile: true
