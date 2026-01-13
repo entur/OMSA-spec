@@ -2,6 +2,31 @@ name: gha-openapi-tools validation
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Generator mode'
+        type: choice
+        default: 'both'
+        options:
+          - server
+          - client
+          - both
+      server_generators:
+        description: 'Server generators (comma-separated, blank = all)'
+        type: string
+        default: 'aspnetcore,kotlin-spring,spring,python-fastapi'
+      client_generators:
+        description: 'Client generators (comma-separated, blank = all)'
+        type: string
+        default: 'python,kotlin,java,csharp,typescript-axios'
+      run_compile:
+        description: 'Compile generated code'
+        type: boolean
+        default: true
+      run_upload_generated:
+        description: 'Upload generated code artifact'
+        type: boolean
+        default: false
   push:
     paths:
       - OMSA.yaml
@@ -14,7 +39,8 @@ jobs:
     uses: entur/gha-openapi-tools/.github/workflows/workflow.yml@v0
     with:
       spec_path: OMSA.yaml
-      mode: both
-      client_generators: python,kotlin,java,csharp,typescript-axios
-      server_generators: aspnetcore,kotlin-spring,spring,python-fastapi
-      run_compile: true
+      mode: ${{ inputs.mode || 'both' }}
+      server_generators: ${{ inputs.server_generators || 'aspnetcore,kotlin-spring,spring,python-fastapi' }}
+      client_generators: ${{ inputs.client_generators || 'python,kotlin,java,csharp,typescript-axios' }}
+      run_compile: ${{ inputs.run_compile == '' && true || inputs.run_compile }}
+      run_upload_generated: ${{ inputs.run_upload_generated || false }}
